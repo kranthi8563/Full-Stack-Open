@@ -2,8 +2,14 @@ import { useState } from 'react'
 
 const Button=(props)=> <button onClick={props.onClick}>{props.text}</button>
 
-const Statistical=(props)=><p>{props.text} {props.value}</p>
-
+const Statistical=(props)=>{
+  return(
+  <tr>
+  <td>{props.text}</td> 
+  <td>{props.value}</td>
+  </tr>
+  )
+}
 const Statistics=({good,neutral,bad})=> {
   const total = good+neutral+bad
   let average = (good-bad)/total
@@ -17,12 +23,16 @@ const Statistics=({good,neutral,bad})=> {
   }
   return(
     <>
+    <table>
+      <tbody>
    <Statistical text = "Good" value={good} />
    <Statistical text = "Neutral" value={neutral} />
    <Statistical text = "Bad" value={bad} />
    <Statistical text = "All" value={total} />
    <Statistical text = "Average" value={average} />
-   <Statistical text = "Positive" value={positive} />
+   <Statistical text = "Positive" value={positive+"%"} />
+   </tbody>
+    </table>
     </>
   )
   
