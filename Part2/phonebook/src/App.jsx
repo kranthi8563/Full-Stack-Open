@@ -1,13 +1,17 @@
 import { useState } from 'react'
 
+import Search from './components/search'
+import AddPerson from './components/AddPerson'
+import DisplayPersons from './components/DisplayPersons'
+
 const App = () => {
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', num: "9786015243"}
+    { name: 'Arto Hellas', num: "9786015243",id:1}
   ]) 
   const [newName, setNewName] = useState('')
   
   const [newNumber,setNewNumber]=useState('')
-   const [searchTerm, setSearchTerm] = useState('')
+   const [searchTerm, setSearchTerm] = useState([])
 const addName=(event)=>{
   event.preventDefault()
   if (persons.some(person => person.name === newName) || persons.some(person=>person.num===newNumber)) {
@@ -18,38 +22,24 @@ const addName=(event)=>{
   setNewName("")
   setNewNumber("")
 }
-  const filteredPersons = persons.filter(person =>
-    person.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    person.num.includes(searchTerm)
-  )
-
+   const handleSearch = (event) => {
+        const searchQuery = event.target.value;
+        const filteredPersonsArray = persons.filter((person) => person.name.toLowerCase().includes(searchQuery.toLowerCase()))
+        setSearchTerm(filteredPersonsArray)
+    }
 
   return (
     <div>
       <h2>Phonebook</h2>
+      
        <div>
-        <h3>Search</h3>
-        <input
-          type="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by name or number"
-        />
+      <Search handleSearch={handleSearch} searchResults={searchTerm} />
       </div>
-      <form onSubmit={addName} >
-        <div>
-          name: <input value={newName} onChange={(event)=>setNewName(event.target.value)}/>
-        </div>
-        <div>number: <input value={newNumber} onChange={(event)=>setNewNumber(event.target.value)}/></div>
-        <div>
-          <button type="submit" >add</button>
-        </div>
-      </form>
+      <h3>Add a new</h3>
+     <AddPerson addName={addName} newName={newName} newNumber={newNumber} setNewName={setNewName} setNewNumber={setNewNumber} />
       <h2>Numbers</h2>
      <div>
-        {filteredPersons.map(person => (
-          <div key={person.name}>{person.name} {person.num}</div>
-        ))}
+       <DisplayPersons persons={persons} />
       </div>
     </div>
   )
