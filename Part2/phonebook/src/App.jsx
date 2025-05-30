@@ -1,17 +1,21 @@
-import { useState } from 'react'
+import { useEffect,useState } from 'react'
 
 import Search from './components/search'
 import AddPerson from './components/AddPerson'
 import DisplayPersons from './components/DisplayPersons'
+import axios from 'axios'
+
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', num: "9786015243",id:1}
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
-  
   const [newNumber,setNewNumber]=useState('')
-   const [searchTerm, setSearchTerm] = useState([])
+  const [searchTerm, setSearchTerm] = useState([])
+  useEffect(() => {
+    axios.get("http://localhost:3001/persons").then(response => {
+      setPersons(response.data)
+    })
+  }, [])
 const addName=(event)=>{
   event.preventDefault()
   if (persons.some(person => person.name === newName) || persons.some(person=>person.num===newNumber)) {
