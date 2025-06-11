@@ -22,9 +22,12 @@ const addName=(event)=>{
   alert(`${newName} or ${newNumber} is already added to phonebook`);
   return;
 }
-  setPersons(persons.concat({name : newName,num: newNumber}))
-  setNewName("")
-  setNewNumber("")
+    const personObject = { name: newName, number: newNumber }
+    axios.post("http://localhost:3001/persons", personObject).then(response => {
+      setPersons(persons.concat(response.data))
+      setNewName("")
+      setNewNumber("")
+    })
 }
    const handleSearch = (event) => {
         const searchQuery = event.target.value;
