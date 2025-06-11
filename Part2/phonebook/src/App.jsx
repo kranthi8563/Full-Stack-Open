@@ -4,6 +4,7 @@ import Search from './components/search'
 import AddPerson from './components/AddPerson'
 import DisplayPersons from './components/DisplayPersons'
 import axios from 'axios'
+import personService from "./services/person"
 
 
 const App = () => {
@@ -12,10 +13,11 @@ const App = () => {
   const [newNumber,setNewNumber]=useState('')
   const [searchTerm, setSearchTerm] = useState([])
   useEffect(() => {
-    axios.get("http://localhost:3001/persons").then(response => {
-      setPersons(response.data)
+    personService.getAll().then(initialPersons => {
+      setPersons(initialPersons)
     })
   }, [])
+  
 const addName=(event)=>{
   event.preventDefault()
   if (persons.some(person => person.name === newName) || persons.some(person=>person.num===newNumber)) {
@@ -23,8 +25,8 @@ const addName=(event)=>{
   return;
 }
     const personObject = { name: newName, number: newNumber }
-    axios.post("http://localhost:3001/persons", personObject).then(response => {
-      setPersons(persons.concat(response.data))
+     personService.create(personObject).then(returnedPerson => {
+      setPersons(persons.concat(returnedPerson))
       setNewName("")
       setNewNumber("")
     })
