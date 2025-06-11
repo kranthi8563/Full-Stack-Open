@@ -3,7 +3,6 @@ import { useEffect,useState } from 'react'
 import Search from './components/search'
 import AddPerson from './components/AddPerson'
 import DisplayPersons from './components/DisplayPersons'
-import axios from 'axios'
 import personService from "./services/person"
 
 
@@ -36,19 +35,29 @@ const addName=(event)=>{
         const filteredPersonsArray = persons.filter((person) => person.name.toLowerCase().includes(searchQuery.toLowerCase()))
         setSearchTerm(filteredPersonsArray)
     }
+    const onDelete = (id) => {
+ const deletePerson = persons.find(person => person.id === id)
+    if (confirm(`Delete ${deletePerson.name} ?`)) {
+
+      personService.remove(id).then(returnedPerson => {
+        setPersons(persons.filter(person => person.id !== id))
+        setSearchResults(searchResults.filter(person => person.id !== id))
+      })
+    }
+}
 
   return (
     <div>
       <h2>Phonebook</h2>
       
        <div>
-      <Search handleSearch={handleSearch} searchResults={searchTerm} />
+      <Search handleSearch={handleSearch} searchResults={searchTerm} onDelete={onDelete} />
       </div>
       <h3>Add a new</h3>
      <AddPerson addName={addName} newName={newName} newNumber={newNumber} setNewName={setNewName} setNewNumber={setNewNumber} />
       <h2>Numbers</h2>
      <div>
-       <DisplayPersons persons={persons} />
+       <DisplayPersons persons={persons} onDelete={onDelete} />
       </div>
     </div>
   )
