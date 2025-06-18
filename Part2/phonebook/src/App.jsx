@@ -16,20 +16,44 @@ const App = () => {
       setPersons(initialPersons)
     })
   }, [])
-  
-const addName=(event)=>{
-  event.preventDefault()
-  if (persons.some(person => person.name === newName) || persons.some(person=>person.num===newNumber)) {
-  alert(`${newName} or ${newNumber} is already added to phonebook`);
-  return;
-}
-    const personObject = { name: newName, number: newNumber }
+  const updatePerson = (personExists) => {
+    const updatedPerson = { ...personExists, number: newNumber }
+    personService.update(updatedPerson.id, updatedPerson).then(returnedPerson => {
+      setPersons(persons.map(person => person.id === returnedPerson.id ? returnedPerson : person))
+    })
+    setNewName("")
+    setNewNumber("")
+  }
+  const createPerson = () => {
+   const personObject = { name: newName, number: newNumber }
      personService.create(personObject).then(returnedPerson => {
       setPersons(persons.concat(returnedPerson))
       setNewName("")
       setNewNumber("")
     })
-}
+   
+  }
+  
+const addName=(event)=>{
+  event.preventDefault()
+    if (newName.length === 0 || newNumber.length === 0) {
+      alert("Empty name or number. Please fill all the details.")
+      return;
+    }
+    const personExists = persons.find((person) => person.name.toLowerCase() == newName.toLowerCase())
+    if (personExists) {
+      if (!confirm(`${personExists.name} is already added to phonebook, replace the old number with a new one?`)) {
+        setNewName("")
+        setNewNumber("")
+        return; 
+      }
+      updatePerson(personExists)
+      return;
+    }
+    createPerson()
+  }
+   
+
    const handleSearch = (event) => {
         const searchQuery = event.target.value;
         const filteredPersonsArray = persons.filter((person) => person.name.toLowerCase().includes(searchQuery.toLowerCase()))
@@ -41,7 +65,7 @@ const addName=(event)=>{
 
       personService.remove(id).then(returnedPerson => {
         setPersons(persons.filter(person => person.id !== id))
-        setSearchResults(searchResults.filter(person => person.id !== id))
+        setSearchTerm(searchTerm.filter(person => person.id !== id))
       })
     }
 }
@@ -56,9 +80,9 @@ const addName=(event)=>{
       <h3>Add a new</h3>
      <AddPerson addName={addName} newName={newName} newNumber={newNumber} setNewName={setNewName} setNewNumber={setNewNumber} />
       <h2>Numbers</h2>
-     <div>
+    
        <DisplayPersons persons={persons} onDelete={onDelete} />
-      </div>
+      
     </div>
   )
 }
